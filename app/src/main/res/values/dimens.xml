@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="spacing_xxsmall">2dp</dimen>
+    <dimen name="spacing_xsmall">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_xlarge">32dp</dimen>
+    <dimen name="spacing_xxlarge">64dp</dimen>
+    <dimen name="spacing_xxxlarge">128dp</dimen>
+
+    <dimen name="text_size_ultrasmall">4sp</dimen>
+    <dimen name="text_size_xxxsmall">6sp</dimen>
+    <dimen name="text_size_xxsmall">8sp</dimen>
+    <dimen name="text_size_xsmall">10sp</dimen>
+    <dimen name="text_size_micro">12sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_regular">16sp</dimen>
+    <dimen name="text_size_medium">20sp</dimen>
+    <dimen name="text_size_large">24sp</dimen>
+    <dimen name="text_size_xlarge">34sp</dimen>
+    <dimen name="text_size_xxlarge">45sp</dimen>
+    <dimen name="text_size_xxxlarge">56sp</dimen>
+
+    <dimen name="text_size_body_1_material">14sp</dimen>
+    <dimen name="text_size_body_2_material">14sp</dimen>
+    <dimen name="text_size_button_material">14sp</dimen>
+    <dimen name="text_size_caption_material">12sp</dimen>
+    <dimen name="text_size_display_1_material">34sp</dimen>
+    <dimen name="text_size_display_2_material">45sp</dimen>
+    <dimen name="text_size_display_3_material">56sp</dimen>
+    <dimen name="text_size_display_4_material">112sp</dimen>
+    <dimen name="text_size_headline_material">24sp</dimen>
+    <dimen name="text_size_large_material">22sp</dimen>
+    <dimen name="text_size_medium_material">18sp</dimen>
+    <dimen name="text_size_menu_header_material">14sp</dimen>
+    <dimen name="text_size_menu_material">16sp</dimen>
+    <dimen name="text_size_small_material">14sp</dimen>
+    <dimen name="text_size_subhead_material">16sp</dimen>
+    <dimen name="text_size_subtitle_material_toolbar">16dp</dimen>
+    <dimen name="text_size_title_material">20sp</dimen>
+    <dimen name="text_size_title_material_toolbar">20dp</dimen>
+
+    <dimen name="spacing_button">12dp</dimen>
+
+    <dimen name="text_size_domain">24sp</dimen>
+
+    <dimen name="profile_image_size_large">72dp</dimen>
+    <dimen name="profile_image_size_medium">52dp</dimen>
+    <dimen name="profile_image_size_small">40dp</dimen>
+
+    <dimen name="logo_size">64dp</dimen>
+    <dimen name="logo_size_home">48dp</dimen>
+    <dimen name="logo_size_large">80dp</dimen>
+    <dimen name="logo_size_small">32dp</dimen>
+
+    <dimen name="icon_size_xsmall">22dp</dimen>
+    <dimen name="icon_size_small">26dp</dimen>
+
+    <dimen name="download_bar_mini">48dp</dimen>
+
+    <dimen name="dimen_bottom_navigation_height">56dp</dimen>
+    <dimen name="dimen_password_width">40dp</dimen>
+    <dimen name="dimen_password_height">48dp</dimen>
+
+    <dimen name="corner_radius">4dp</dimen>
+    <dimen name="dialog_corner_radius">6dp</dimen>
+
+    <dimen name="keyboard_min_height">128dp</dimen>
+    <dimen name="search_view_height">40dp</dimen>
+    <dimen name="profile_default_border_width">2dp</dimen>
+    <dimen name="spacing_regular">12dp</dimen>
+
+</resources>
