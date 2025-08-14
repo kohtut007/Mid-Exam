@@ -9,15 +9,7 @@
     android:paddingEnd="@dimen/spacing_large"
     android:paddingTop="@dimen/spacing_xlarge"
     android:paddingBottom="@dimen/spacing_xlarge"
-    tools:context=".auth.login.LoginActivity">
-
-    <ImageView
-        android:id="@+id/ivBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/img"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".auth.register.RegisterActivity">
 
     <TextView
         android:id="@+id/lblLogin"
@@ -31,7 +23,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivBack" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/spacing_xlarge" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSignInWithGoogle"
@@ -152,6 +145,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/llPasswordStrength"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tvPasswordWarning"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password Strength: "
+            android:textSize="12sp"
+            android:textColor="@color/hint_color"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tvPasswordStrength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Weak"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/red" />
+
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilConfirmPassword"
         android:layout_width="0dp"
@@ -161,7 +184,7 @@
         app:passwordToggleTint="@color/black"
         android:textColorHint="@color/hint_color"
         app:boxStrokeColor="@color/colorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/tvPasswordWarning"
+        app:layout_constraintTop_toBottomOf="@id/llPasswordStrength"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -187,18 +210,17 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <CheckBox
-        android:id="@+id/cbKeepSignedIn"
-        android:layout_width="wrap_content"
+        android:id="@+id/cbTermsAndConditions"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_medium"
-        android:text="@string/lbl_check_for_register"
+        android:text="@string/lbl_terms_and_conditions"
         android:textAllCaps="false"
-        android:gravity="top"
         android:textSize="@dimen/text_size_small"
-        android:textAlignment="center"
         android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/tvConfirmPasswordWarning"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnRegister"
@@ -212,7 +234,7 @@
         android:paddingTop="@dimen/spacing_regular"
         android:paddingBottom="@dimen/spacing_regular"
         android:textSize="@dimen/text_size_small"
-        app:layout_constraintTop_toBottomOf="@id/cbKeepSignedIn"
+        app:layout_constraintTop_toBottomOf="@id/cbTermsAndConditions"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
