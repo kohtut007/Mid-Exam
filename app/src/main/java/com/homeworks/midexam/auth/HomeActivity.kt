@@ -16,6 +16,7 @@ import com.homeworks.midexam.auth.utils.showToast
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
@@ -69,6 +70,7 @@ class HomeActivity : AppCompatActivity() {
             onEdit = { status -> showStatusDialog(isEditing = true, statusToEdit = status) },
             onDelete = { status -> showDeleteConfirmation(status) }
         )
+        binding.rvStatuses.layoutManager = LinearLayoutManager(this)
         binding.rvStatuses.adapter = adapter
     }
 
@@ -82,7 +84,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun formatTime(timestamp: String): String {
-        // Simple time formatting - you can enhance this
         return "Just now"
     }
 
@@ -95,9 +96,7 @@ class HomeActivity : AppCompatActivity() {
 
         if (isEditing) {
             dialogTitle.text = "Edit Status"
-            // Pre-fill with selected status text
             statusEditText.setText(statusToEdit?.statusText ?: "")
-            // Set cursor to end of text
             statusEditText.setSelection(statusEditText.text.length)
         } else {
             dialogTitle.text = "Add Status"

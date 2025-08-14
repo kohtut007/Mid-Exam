@@ -7,7 +7,6 @@
     android:padding="24dp"
     android:background="@drawable/dialog_background">
 
-    <!-- Icon -->
     <ImageView
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -18,7 +17,6 @@
         android:padding="12dp"
         app:tint="@color/colorPrimary" />
 
-    <!-- Title -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,20 +24,20 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
+        android:fontFamily="@font/roboto_regular"
         android:gravity="center"
         android:layout_marginBottom="8dp" />
 
-    <!-- Message -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Are you sure you want to logout from your account?"
         android:textSize="16sp"
         android:textColor="@color/hint_color"
+        android:fontFamily="@font/roboto_regular"
         android:gravity="center"
         android:layout_marginBottom="24dp" />
 
-    <!-- Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,6 +53,7 @@
             android:text="Cancel"
             android:textSize="16sp"
             app:cornerRadius="25dp"
+            android:fontFamily="@font/roboto_regular"
             android:backgroundTint="@color/gray"
             android:textColor="@color/black" />
 
@@ -64,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
+            android:fontFamily="@font/roboto_regular"
             android:text="Logout"
             android:textSize="16sp"
             app:cornerRadius="25dp"

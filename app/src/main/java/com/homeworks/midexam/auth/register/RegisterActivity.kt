@@ -1,21 +1,26 @@
 package com.homeworks.midexam.auth.register
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import com.homeworks.midexam.databinding.ActivityRegisterBinding
-import android.text.method.PasswordTransformationMethod
-import android.widget.TextView
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
+import android.util.Log
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
-import com.homeworks.midexam.auth.utils.GoogleSignInHelper
-import com.homeworks.midexam.auth.utils.showToast
-import com.homeworks.midexam.auth.utils.launchActivity
-import com.homeworks.midexam.auth.login.LoginActivity
-import com.homeworks.midexam.database.DatabaseHelper
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import android.content.Intent
+import com.homeworks.midexam.auth.login.LoginActivity
+import com.homeworks.midexam.auth.utils.GoogleSignInHelper
+import com.homeworks.midexam.auth.utils.launchActivity
+import com.homeworks.midexam.auth.utils.showToast
+import com.homeworks.midexam.database.DatabaseHelper
+import com.homeworks.midexam.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -25,6 +30,8 @@ class RegisterActivity : AppCompatActivity() {
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        Log.d("RegisterActivity>>", "Google Sign-In result: ${result.resultCode}")
+        Log.d("RegisterActivity>>", "Data: ${result.data}")
         when (result.resultCode) {
             RESULT_OK -> {
                 handleGoogleSignInResult(result.data)
@@ -51,6 +58,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun catchEvent() {
+        binding.llPasswordStrength.visibility = View.GONE
         binding.apply {
             llSignUp.setOnClickListener {
                 launchActivity<LoginActivity>()
@@ -176,13 +184,13 @@ class RegisterActivity : AppCompatActivity() {
         } else {
             etPassword.transformationMethod = null
         }
-        (etPassword as? android.widget.EditText)?.setSelection(etPassword.text?.length ?: 0)
+        (etPassword as? EditText)?.setSelection(etPassword.text?.length ?: 0)
     }
 
     private fun updatePasswordStrength(password: String) {
         val strength = when {
             password.isEmpty() -> {
-                binding.llPasswordStrength.visibility = android.view.View.GONE
+                binding.llPasswordStrength.visibility = View.GONE
                 return
             }
             password.length < 8 -> "Very Weak"
@@ -193,15 +201,15 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         val color = when (strength) {
-            "Very Weak" -> android.graphics.Color.RED
-            "Weak" -> android.graphics.Color.parseColor("#FF8C00") // Orange
-            "Fair" -> android.graphics.Color.parseColor("#FFD700") // Gold
-            "Good" -> android.graphics.Color.parseColor("#32CD32") // Lime Green
-            "Strong" -> android.graphics.Color.GREEN
-            else -> android.graphics.Color.RED
+            "Very Weak" -> Color.RED
+            "Weak" -> Color.parseColor("#FF8C00") // Orange
+            "Fair" -> Color.parseColor("#FFD700") // Gold
+            "Good" -> Color.parseColor("#32CD32") // Lime Green
+            "Strong" -> Color.GREEN
+            else -> Color.RED
         }
 
-        binding.llPasswordStrength.visibility = android.view.View.VISIBLE
+        binding.llPasswordStrength.visibility = View.VISIBLE
         binding.tvPasswordStrength.text = strength
         binding.tvPasswordStrength.setTextColor(color)
     }
