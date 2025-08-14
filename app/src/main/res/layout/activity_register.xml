@@ -251,14 +251,15 @@
             android:id="@+id/tvDontHaveAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an Account? "
+            android:text="Already have an Account? "
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_regular" />
         <TextView
             android:id="@+id/tvSignUpHere"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign up here"
+            android:text="Login"
+            android:fontFamily="@font/roboto_regular"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/text_size_regular"
             android:textStyle="bold" />
