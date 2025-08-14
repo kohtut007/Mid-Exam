@@ -204,6 +204,7 @@
             android:text="Sign up here"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/text_size_regular"
+            android:fontFamily="@font/roboto_regular"
             android:textStyle="bold" />
     </LinearLayout>
 

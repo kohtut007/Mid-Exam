@@ -218,6 +218,7 @@
         android:textAllCaps="false"
         android:textSize="@dimen/text_size_small"
         android:textColor="@color/black"
+        android:gravity="fill_vertical"
         app:layout_constraintTop_toBottomOf="@id/tvConfirmPasswordWarning"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -258,7 +259,7 @@
             android:id="@+id/tvSignUpHere"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="Login here"
             android:fontFamily="@font/roboto_regular"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/text_size_regular"

@@ -15,7 +15,7 @@
         android:src="@android:drawable/ic_dialog_alert"
         android:background="@drawable/icon_background"
         android:padding="12dp"
-        app:tint="@color/colorPrimary" />
+        app:tint="@color/red" />
 
     <TextView
         android:layout_width="match_parent"
