@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
+import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -36,10 +37,12 @@ class LoginActivity : AppCompatActivity() {
             RESULT_OK -> {
                 handleGoogleSignInResult(result.data)
             }
+
             RESULT_CANCELED -> {
                 // User cancelled the sign-in process
                 showToast("Google Sign-In was cancelled by user")
             }
+
             else -> {
                 // Handle other result codes
                 handleGoogleSignInError(result.resultCode)
@@ -68,36 +71,32 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupLoginForm() {
-        binding.etPassword.transformationMethod = AsteriskPasswordTransformationMethod()
-        binding.tilPassword.setEndIconTintList(ColorStateList.valueOf(Color.BLACK))
+    private fun setupLoginForm() = binding.apply {
+        etPassword.transformationMethod = AsteriskPasswordTransformationMethod()
+        tilPassword.setEndIconTintList(ColorStateList.valueOf(Color.BLACK))
 
-        binding.etUsername.doAfterTextChanged {
-            binding.tvUsernameWarning.showWarning(validateUsername(binding.etUsername.text.toString()))
+        etUsername.doAfterTextChanged {
+            tvUsernameWarning.showWarning(validateUsername(etUsername.text.toString()))
         }
-        binding.etPassword.doAfterTextChanged {
-            binding.tvPasswordWarning.showWarning(validatePassword(binding.etPassword.text.toString()))
+        etPassword.doAfterTextChanged {
+            tvPasswordWarning.showWarning(validatePassword(etPassword.text.toString()))
         }
-        binding.tilPassword.setEndIconOnClickListener {
+        tilPassword.setEndIconOnClickListener {
             togglePasswordVisibility()
         }
-        binding.btnLogin.setOnClickListener {
-            val userValid = validateUsername(binding.etUsername.text.toString())
-            val passValid = validatePassword(binding.etPassword.text.toString())
-            binding.tvUsernameWarning.showWarning(userValid)
-            binding.tvPasswordWarning.showWarning(passValid)
+        btnLogin.setOnClickListener {
+            val userValid = validateUsername(etUsername.text.toString())
+            val passValid = validatePassword(etPassword.text.toString())
+            tvUsernameWarning.showWarning(userValid)
+            tvPasswordWarning.showWarning(passValid)
             if (userValid == null && passValid == null) {
-                val username = binding.etUsername.text.toString()
-                val password = binding.etPassword.text.toString()
-                
-                // Validate user credentials
+                val username = etUsername.text.toString()
+                val password = etPassword.text.toString()
                 val user = databaseHelper.validateUser(username, password)
                 if (user != null) {
-                    // Save keep me signed in preference
-                    if (binding.cbKeepSignedIn.isChecked) {
+                    if (cbKeepSignedIn.isChecked) {
                         saveKeepSignedInPreference(username)
                     }
-                    
                     launchActivity<HomeActivity> {
                         putExtra("user_id", user.id)
                         putExtra("username", user.username)
@@ -108,14 +107,13 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
-        binding.tvSignUpHere.setOnClickListener {
+        tvSignUpHere.setOnClickListener {
             launchActivity<RegisterActivity>()
         }
-        binding.btnSignInWithGoogle.setOnClickListener {
+        btnSignInWithGoogle.setOnClickListener {
             startGoogleSignIn()
         }
     }
-
     private fun validateUsername(username: String): String? =
         if (username.isBlank()) "Username cannot be empty" else null
 
@@ -138,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
     class AsteriskPasswordTransformationMethod : PasswordTransformationMethod() {
         override fun getTransformation(
             source: CharSequence,
-            view: android.view.View,
+            view: View,
         ): CharSequence {
             return PasswordCharSequence(source)
         }
@@ -184,6 +182,7 @@ class LoginActivity : AppCompatActivity() {
                     val account = result.account
                     handleSuccessfulGoogleSignIn(account)
                 }
+
                 is GoogleSignInHelper.GoogleSignInResult.Error -> {
                     handleGoogleSignInError(result.statusCode, result.message)
                 }
@@ -196,10 +195,9 @@ class LoginActivity : AppCompatActivity() {
     private fun handleSuccessfulGoogleSignIn(account: GoogleSignInAccount) {
         val email = account.email ?: ""
         val displayName = account.displayName ?: account.email?.split("@")?.first() ?: "User"
-        
-        // Check if user exists in database
+
         if (databaseHelper.checkUserExists(email)) {
-            // User exists, proceed to login
+
             val user = databaseHelper.validateUser(email, "google_auth")
             if (user != null) {
                 launchActivity<HomeActivity> {
@@ -211,7 +209,6 @@ class LoginActivity : AppCompatActivity() {
                 showToast("Account exists but authentication failed")
             }
         } else {
-            // Create new user account
             val userId = databaseHelper.addUser(email, "google_auth")
             if (userId != -1L) {
                 showToast("Welcome, $displayName!")
@@ -229,7 +226,6 @@ class LoginActivity : AppCompatActivity() {
     private fun checkExistingGoogleSignIn() {
         val account = googleSignInHelper.getLastSignedInAccount()
         if (account != null) {
-            // User is already signed in, proceed to home
             handleSuccessfulGoogleSignIn(account)
         }
     }
@@ -239,6 +235,7 @@ class LoginActivity : AppCompatActivity() {
             GoogleSignInHelper.RC_SIGN_IN -> {
                 showToast("Google Sign-In failed: Please try again")
             }
+
             else -> {
                 showToast("Google Sign-In failed: Error code $resultCode")
             }
@@ -247,25 +244,31 @@ class LoginActivity : AppCompatActivity() {
 
     private fun handleGoogleSignInError(statusCode: Int, message: String) {
         val errorMessage = when (statusCode) {
-            com.google.android.gms.common.api.CommonStatusCodes.NETWORK_ERROR -> 
+            com.google.android.gms.common.api.CommonStatusCodes.NETWORK_ERROR ->
                 "Network error. Please check your internet connection."
-            com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT ->
                 "Request timed out. Please try again."
-            com.google.android.gms.common.api.CommonStatusCodes.CANCELED -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.CANCELED ->
                 "Sign-in was cancelled."
-            com.google.android.gms.common.api.CommonStatusCodes.INVALID_ACCOUNT -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.INVALID_ACCOUNT ->
                 "Invalid account. Please try with a different account."
-            com.google.android.gms.common.api.CommonStatusCodes.SIGN_IN_REQUIRED -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.SIGN_IN_REQUIRED ->
                 "Sign-in required. Please try again."
-            com.google.android.gms.common.api.CommonStatusCodes.INTERNAL_ERROR -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.INTERNAL_ERROR ->
                 "Internal error. Please try again later."
+
             else -> "Google Sign-In failed: $message"
         }
         showToast(errorMessage)
     }
 
     private fun saveKeepSignedInPreference(username: String) {
-        val sharedPrefs = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE)
         sharedPrefs.edit().apply {
             putBoolean("keep_signed_in", true)
             putString("saved_username", username)
@@ -275,14 +278,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkKeepSignedInPreference() {
-        val sharedPrefs = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE)
         val keepSignedIn = sharedPrefs.getBoolean("keep_signed_in", false)
         val savedUsername = sharedPrefs.getString("saved_username", "")
         val loginTimestamp = sharedPrefs.getLong("login_timestamp", 0)
-        
-        // Check if preference is still valid (e.g., within 30 days)
-        if (keepSignedIn && !savedUsername.isNullOrEmpty() && 
-            System.currentTimeMillis() - loginTimestamp < 30 * 24 * 60 * 60 * 1000) {
+
+        // Check if preference is still valid
+        if (keepSignedIn && !savedUsername.isNullOrEmpty() &&
+            System.currentTimeMillis() - loginTimestamp < 30 * 24 * 60 * 60 * 1000
+        ) {
             // Auto-login
             val user = databaseHelper.getUserByUsername(savedUsername)
             if (user != null) {

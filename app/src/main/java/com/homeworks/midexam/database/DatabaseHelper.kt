@@ -155,8 +155,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STATUS_ID)),
                 userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID_FK)),
                 statusText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS_TEXT)),
-                createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT))
-            )
+                createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT))            )
             cursor.close()
             status
         } else {
@@ -182,8 +181,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STATUS_ID)),
                     userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_USER_ID_FK)),
                     statusText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS_TEXT)),
-                    createdAt = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT))
-                )
+                    createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT))                )
                 statuses.add(status)
             } while (cursor.moveToNext())
         }

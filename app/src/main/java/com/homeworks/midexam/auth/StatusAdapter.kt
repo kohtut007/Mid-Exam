@@ -1,13 +1,11 @@
 package com.homeworks.midexam.auth
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.homeworks.midexam.R
+import com.homeworks.midexam.databinding.ItemStatusBinding
 import com.homeworks.midexam.models.Status
 
 class StatusAdapter(
@@ -21,32 +19,25 @@ class StatusAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatusViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_status, parent, false)
-        return StatusViewHolder(view)
+        val binding = ItemStatusBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return StatusViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: StatusViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class StatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvStatusText: TextView = itemView.findViewById(R.id.tvStatusText)
-        private val tvStatusTime: TextView = itemView.findViewById(R.id.tvStatusTime)
-        private val btnEdit: TextView = itemView.findViewById(R.id.btnEdit)
-        private val btnDelete: TextView = itemView.findViewById(R.id.btnDelete)
-
+    inner class StatusViewHolder(private val binding: ItemStatusBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(status: Status) {
-            tvStatusText.text = status.statusText
-            tvStatusTime.text = formatTime(status.createdAt)
+            binding.tvStatusText.text = status.statusText
+            binding.tvStatusTime.text = formatTime(status.createdAt)
 
-            btnEdit.setOnClickListener { onEdit(status) }
-            btnDelete.setOnClickListener { onDelete(status) }
+            binding.btnEdit.setOnClickListener { onEdit(status) }
+            binding.btnDelete.setOnClickListener { onDelete(status) }
         }
 
-        private fun formatTime(timestamp: String): String {
+        private fun formatTime(timestamp: Long): String {
             return "Just now"
         }
     }
 }
-
-

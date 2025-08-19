@@ -9,13 +9,12 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/auth_app_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/auth_app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.MidExam"
         tools:targetApi="31" >
-        <!-- LoginActivity: Entry point, login screen -->
         <activity
             android:name=".auth.login.LoginActivity"
             android:exported="true">
@@ -24,11 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- RegisterActivity: User registration screen -->
         <activity
             android:name=".auth.register.RegisterActivity"
             android:exported="true" />
-        <!-- HomeActivity: Main screen after successful login -->
         <activity
             android:name=".auth.HomeActivity"
             android:exported="true" />

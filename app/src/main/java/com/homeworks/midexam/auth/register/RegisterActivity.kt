@@ -21,6 +21,7 @@ import com.homeworks.midexam.auth.utils.launchActivity
 import com.homeworks.midexam.auth.utils.showToast
 import com.homeworks.midexam.database.DatabaseHelper
 import com.homeworks.midexam.databinding.ActivityRegisterBinding
+import androidx.core.graphics.toColorInt
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -37,11 +38,9 @@ class RegisterActivity : AppCompatActivity() {
                 handleGoogleSignInResult(result.data)
             }
             RESULT_CANCELED -> {
-                // User cancelled the sign-in process
                 showToast("Google Sign-In was cancelled by user")
             }
             else -> {
-                // Handle other result codes
                 handleGoogleSignInError(result.resultCode)
             }
         }
@@ -107,7 +106,6 @@ class RegisterActivity : AppCompatActivity() {
             tvPasswordWarning.showWarning(passValid)
             tvConfirmPasswordWarning.showWarning(confirmValid)
             
-            // Check terms and conditions
             if (!cbTermsAndConditions.isChecked) {
                 showToast("Please accept the Terms and Conditions to continue.")
                 return@setOnClickListener
@@ -117,13 +115,11 @@ class RegisterActivity : AppCompatActivity() {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
                 
-                // Check if user already exists
                 if (databaseHelper.checkUserExists(username)) {
                     showToast("Username already exists! Please choose a different username.")
                     return@setOnClickListener
                 }
                 
-                // Add user to database
                 val userId = databaseHelper.addUser(username, password)
                 if (userId != -1L) {
                     showToast("Registration successful! Please login.")
@@ -202,9 +198,9 @@ class RegisterActivity : AppCompatActivity() {
 
         val color = when (strength) {
             "Very Weak" -> Color.RED
-            "Weak" -> Color.parseColor("#FF8C00") // Orange
-            "Fair" -> Color.parseColor("#FFD700") // Gold
-            "Good" -> Color.parseColor("#32CD32") // Lime Green
+            "Weak" -> "#FF8C00".toColorInt() // Orange
+            "Fair" -> "#FFD700".toColorInt() // Gold
+            "Good" -> "#32CD32".toColorInt() // Lime Green
             "Strong" -> Color.GREEN
             else -> Color.RED
         }
@@ -250,13 +246,11 @@ class RegisterActivity : AppCompatActivity() {
         val email = account.email ?: ""
         val displayName = account.displayName ?: account.email?.split("@")?.first() ?: "User"
         
-        // Check if user exists in database
         if (databaseHelper.checkUserExists(email)) {
             showToast("Account already exists! Please login instead.")
             launchActivity<LoginActivity>()
             finish()
         } else {
-            // Create new user account
             val userId = databaseHelper.addUser(email, "google_auth")
             if (userId != -1L) {
                 showToast("Registration successful with Google! Welcome, $displayName!")

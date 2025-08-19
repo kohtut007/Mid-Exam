@@ -55,10 +55,7 @@ class HomeActivity : AppCompatActivity() {
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
-        
-        binding.btnAddStatus.setOnClickListener {
-            showStatusDialog()
-        }
+
         
         binding.fabQuickStatus.setOnClickListener {
             showStatusDialog()
@@ -200,7 +197,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        // Sign out from Google if user was signed in with Google
         googleSignInHelper.signOut()
         showToast("Logged out successfully!")
         launchActivity<LoginActivity>()
