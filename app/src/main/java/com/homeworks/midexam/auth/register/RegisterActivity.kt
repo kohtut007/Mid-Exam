@@ -19,14 +19,15 @@ import com.homeworks.midexam.auth.login.LoginActivity
 import com.homeworks.midexam.auth.utils.GoogleSignInHelper
 import com.homeworks.midexam.auth.utils.launchActivity
 import com.homeworks.midexam.auth.utils.showToast
-import com.homeworks.midexam.database.DatabaseHelper
 import com.homeworks.midexam.databinding.ActivityRegisterBinding
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.ViewModelProvider
+import com.homeworks.midexam.auth.viewmodel.UserViewModel
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
-    private lateinit var databaseHelper: DatabaseHelper
     private lateinit var googleSignInHelper: GoogleSignInHelper
+    private lateinit var userViewModel: UserViewModel
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -50,8 +51,8 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        databaseHelper = DatabaseHelper(this)
         googleSignInHelper = GoogleSignInHelper(this)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         catchEvent()
         setupRegisterForm()
     }
@@ -114,19 +115,20 @@ class RegisterActivity : AppCompatActivity() {
             if (userValid == null && passValid == null && confirmValid == null) {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
-                
-                if (databaseHelper.checkUserExists(username)) {
-                    showToast("Username already exists! Please choose a different username.")
-                    return@setOnClickListener
-                }
-                
-                val userId = databaseHelper.addUser(username, password)
-                if (userId != -1L) {
-                    showToast("Registration successful! Please login.")
-                    launchActivity<LoginActivity>()
-                    finish()
-                } else {
-                    showToast("Registration failed! Please try again.")
+                userViewModel.getUserByUsername(username) { existing ->
+                    if (existing != null) {
+                        showToast("Username already exists! Please choose a different username.")
+                        return@getUserByUsername
+                    }
+                    userViewModel.register(username, password) { id ->
+                        if (id != -1L) {
+                            showToast("Registration successful! Please login.")
+                            launchActivity<LoginActivity>()
+                            finish()
+                        } else {
+                            showToast("Registration failed! Please try again.")
+                        }
+                    }
                 }
             }
         }
@@ -246,18 +248,21 @@ class RegisterActivity : AppCompatActivity() {
         val email = account.email ?: ""
         val displayName = account.displayName ?: account.email?.split("@")?.first() ?: "User"
         
-        if (databaseHelper.checkUserExists(email)) {
-            showToast("Account already exists! Please login instead.")
-            launchActivity<LoginActivity>()
-            finish()
-        } else {
-            val userId = databaseHelper.addUser(email, "google_auth")
-            if (userId != -1L) {
-                showToast("Registration successful with Google! Welcome, $displayName!")
+        userViewModel.getUserByUsername(email) { existing ->
+            if (existing != null) {
+                showToast("Account already exists! Please login instead.")
                 launchActivity<LoginActivity>()
                 finish()
             } else {
-                showToast("Failed to create account")
+                userViewModel.register(email, "google_auth") { id ->
+                    if (id != -1L) {
+                        showToast("Registration successful with Google! Welcome, $displayName!")
+                        launchActivity<LoginActivity>()
+                        finish()
+                    } else {
+                        showToast("Failed to create account")
+                    }
+                }
             }
         }
     }

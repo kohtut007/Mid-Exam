@@ -22,13 +22,14 @@ import com.homeworks.midexam.auth.utils.GoogleSignInHelper
 import com.homeworks.midexam.auth.utils.launchActivity
 import com.homeworks.midexam.auth.utils.showToast
 import com.homeworks.midexam.databinding.ActivityLoginBinding
-import com.homeworks.midexam.database.DatabaseHelper
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import androidx.lifecycle.ViewModelProvider
+import com.homeworks.midexam.auth.viewmodel.UserViewModel
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var databaseHelper: DatabaseHelper
     private lateinit var googleSignInHelper: GoogleSignInHelper
+    private lateinit var userViewModel: UserViewModel
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -55,8 +56,8 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        databaseHelper = DatabaseHelper(this)
         googleSignInHelper = GoogleSignInHelper(this)
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         catchEvent()
         setupLoginForm()
         checkExistingGoogleSignIn()
@@ -92,18 +93,20 @@ class LoginActivity : AppCompatActivity() {
             if (userValid == null && passValid == null) {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
-                val user = databaseHelper.validateUser(username, password)
-                if (user != null) {
-                    if (cbKeepSignedIn.isChecked) {
-                        saveKeepSignedInPreference(username)
+                userViewModel.login(username, password) { user ->
+                    if (user != null) {
+                        if (cbKeepSignedIn.isChecked) {
+                            saveKeepSignedInPreference(username)
+                        }
+                        launchActivity<HomeActivity> {
+                            putExtra("user_id", user.id)
+                            putExtra("username", user.username)
+                            finish()
+                        }
+                        finish()
+                    } else {
+                        showToast("Invalid username or password!")
                     }
-                    launchActivity<HomeActivity> {
-                        putExtra("user_id", user.id)
-                        putExtra("username", user.username)
-                    }
-                    finish()
-                } else {
-                    showToast("Invalid username or password!")
                 }
             }
         }
@@ -196,29 +199,32 @@ class LoginActivity : AppCompatActivity() {
         val email = account.email ?: ""
         val displayName = account.displayName ?: account.email?.split("@")?.first() ?: "User"
 
-        if (databaseHelper.checkUserExists(email)) {
-
-            val user = databaseHelper.validateUser(email, "google_auth")
-            if (user != null) {
-                launchActivity<HomeActivity> {
-                    putExtra("user_id", user.id)
-                    putExtra("username", user.username)
+        userViewModel.getUserByUsername(email) { existing ->
+            if (existing != null) {
+                userViewModel.login(email, "google_auth") { user ->
+                    if (user != null) {
+                        launchActivity<HomeActivity> {
+                            putExtra("user_id", user.id)
+                            putExtra("username", user.username)
+                        }
+                        finish()
+                    } else {
+                        showToast("Account exists but authentication failed")
+                    }
                 }
-                finish()
             } else {
-                showToast("Account exists but authentication failed")
-            }
-        } else {
-            val userId = databaseHelper.addUser(email, "google_auth")
-            if (userId != -1L) {
-                showToast("Welcome, $displayName!")
-                launchActivity<HomeActivity> {
-                    putExtra("user_id", userId.toInt())
-                    putExtra("username", displayName)
+                userViewModel.register(email, "google_auth") { id ->
+                    if (id != -1L) {
+                        showToast("Welcome, $displayName!")
+                        launchActivity<HomeActivity> {
+                            putExtra("user_id", id.toInt())
+                            putExtra("username", displayName)
+                        }
+                        finish()
+                    } else {
+                        showToast("Failed to create account")
+                    }
                 }
-                finish()
-            } else {
-                showToast("Failed to create account")
             }
         }
     }
@@ -287,14 +293,14 @@ class LoginActivity : AppCompatActivity() {
         if (keepSignedIn && !savedUsername.isNullOrEmpty() &&
             System.currentTimeMillis() - loginTimestamp < 30 * 24 * 60 * 60 * 1000
         ) {
-            // Auto-login
-            val user = databaseHelper.getUserByUsername(savedUsername)
-            if (user != null) {
-                launchActivity<HomeActivity> {
-                    putExtra("user_id", user.id)
-                    putExtra("username", user.username)
+            userViewModel.getUserByUsername(savedUsername) { user ->
+                if (user != null) {
+                    launchActivity<HomeActivity> {
+                        putExtra("user_id", user.id)
+                        putExtra("username", user.username)
+                    }
+                    finish()
                 }
-                finish()
             }
         }
     }

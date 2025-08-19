@@ -37,7 +37,7 @@ class StatusAdapter(
         }
 
         private fun formatTime(timestamp: Long): String {
-            return "Just now"
+            return "Just now"  // just for show
         }
     }
 }

@@ -6,7 +6,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.homeworks.midexam.R
 import com.homeworks.midexam.databinding.ActivityHomeBinding
-import com.homeworks.midexam.database.DatabaseHelper
 import com.homeworks.midexam.models.Status
 import com.homeworks.midexam.models.User
 import com.homeworks.midexam.auth.login.LoginActivity
@@ -17,14 +16,18 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProvider
+import com.homeworks.midexam.auth.viewmodel.StatusViewModel
+import com.homeworks.midexam.auth.viewmodel.UserViewModel
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var databaseHelper: DatabaseHelper
     private lateinit var googleSignInHelper: GoogleSignInHelper
     private var currentUser: User? = null
     private val statuses: MutableList<Status> = mutableListOf()
     private lateinit var adapter: StatusAdapter
+    private lateinit var statusViewModel: StatusViewModel
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +35,13 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        databaseHelper = DatabaseHelper(this)
         googleSignInHelper = GoogleSignInHelper(this)
+        statusViewModel = ViewModelProvider(this)[StatusViewModel::class.java]
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         setupUserData()
         setupRecycler()
         setupEventListeners()
-        loadStatuses()
+        observeStatuses()
     }
 
     private fun setupUserData() {
@@ -45,7 +49,12 @@ class HomeActivity : AppCompatActivity() {
         val username = intent.getStringExtra("username") ?: "User"
         
         if (userId != -1) {
-            currentUser = databaseHelper.getUserById(userId)
+            userViewModel.getUserById(userId) { user ->
+                currentUser = user
+                if (user != null) {
+                    statusViewModel.loadStatuses(user.id)
+                }
+            }
         }
         
         binding.tvUsername.text = username
@@ -57,9 +66,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         
-        binding.fabQuickStatus.setOnClickListener {
-            showStatusDialog()
-        }
+        binding.fabQuickStatus.setOnClickListener { showStatusDialog() }
     }
 
     private fun setupRecycler() {
@@ -71,12 +78,12 @@ class HomeActivity : AppCompatActivity() {
         binding.rvStatuses.adapter = adapter
     }
 
-    private fun loadStatuses() {
-        currentUser?.let { user ->
+    private fun observeStatuses() {
+        statusViewModel.statuses.observe(this) { list ->
             statuses.clear()
-            statuses.addAll(databaseHelper.getStatusesByUserId(user.id))
-            adapter.submitList(statuses.toList())
-            binding.tvNoStatus.visibility = if (statuses.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+            statuses.addAll(list)
+            adapter.submitList(list.toList())
+            binding.tvNoStatus.visibility = if (list.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
         }
     }
 
@@ -133,23 +140,17 @@ class HomeActivity : AppCompatActivity() {
 
     private fun addStatus(statusText: String) {
         currentUser?.let { user ->
-            val statusId = databaseHelper.addStatus(user.id, statusText)
-            if (statusId != -1L) {
-                loadStatuses()
-                showToast("Status added successfully!")
-            } else {
-                showToast("Failed to add status. Please try again.")
+            statusViewModel.addStatus(user.id, statusText) { ok ->
+                if (ok) showToast("Status added successfully!") else showToast("Failed to add status. Please try again.")
             }
         }
     }
 
     private fun updateStatus(status: Status, statusText: String) {
-        val updatedRows = databaseHelper.updateStatus(status.id, statusText)
-        if (updatedRows > 0) {
-            loadStatuses()
-            showToast("Status updated successfully!")
-        } else {
-            showToast("Failed to update status. Please try again.")
+        currentUser?.let { user ->
+            statusViewModel.updateStatus(status.id, user.id, statusText) { ok ->
+                if (ok) showToast("Status updated successfully!") else showToast("Failed to update status. Please try again.")
+            }
         }
     }
 
@@ -165,12 +166,10 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun deleteStatus(status: Status) {
-        val deletedRows = databaseHelper.deleteStatus(status.id)
-        if (deletedRows > 0) {
-            loadStatuses()
-            showToast("Status deleted successfully!")
-        } else {
-            showToast("Failed to delete status. Please try again.")
+        currentUser?.let { user ->
+            statusViewModel.deleteStatus(status.id, user.id) { ok ->
+                if (ok) showToast("Status deleted successfully!") else showToast("Failed to delete status. Please try again.")
+            }
         }
     }
 
