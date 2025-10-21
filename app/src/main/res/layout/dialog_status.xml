@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:maxLines="4"
+            android:maxLength="280"
             android:minLines="3"
             android:textColor="@color/black"
             android:textSize="16sp" />

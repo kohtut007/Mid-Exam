@@ -122,11 +122,6 @@ class HomeActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (statusText.length > 280) {
-                showToast("Status is too long (max 280 characters)")
-                return@setOnClickListener
-            }
-
             if (isEditing && statusToEdit != null) {
                 updateStatus(statusToEdit, statusText)
             } else {

@@ -1,7 +1,5 @@
 package com.homeworks.midexam.auth.register
 
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -13,16 +11,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColorInt
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.homeworks.midexam.auth.login.LoginActivity
 import com.homeworks.midexam.auth.utils.GoogleSignInHelper
 import com.homeworks.midexam.auth.utils.launchActivity
 import com.homeworks.midexam.auth.utils.showToast
-import com.homeworks.midexam.databinding.ActivityRegisterBinding
-import androidx.core.graphics.toColorInt
-import androidx.lifecycle.ViewModelProvider
 import com.homeworks.midexam.auth.viewmodel.UserViewModel
+import com.homeworks.midexam.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -38,9 +36,11 @@ class RegisterActivity : AppCompatActivity() {
             RESULT_OK -> {
                 handleGoogleSignInResult(result.data)
             }
+
             RESULT_CANCELED -> {
                 showToast("Google Sign-In was cancelled by user")
             }
+
             else -> {
                 handleGoogleSignInError(result.resultCode)
             }
@@ -57,12 +57,10 @@ class RegisterActivity : AppCompatActivity() {
         setupRegisterForm()
     }
 
-    private fun catchEvent() {
-        binding.llPasswordStrength.visibility = View.GONE
-        binding.apply {
-            llSignUp.setOnClickListener {
-                launchActivity<LoginActivity>()
-            }
+    private fun catchEvent() = with(binding) {
+        llPasswordStrength.visibility = View.GONE
+        llSignUp.setOnClickListener {
+            launchActivity<LoginActivity>()
         }
     }
 
@@ -79,16 +77,20 @@ class RegisterActivity : AppCompatActivity() {
             val password = etPassword.text.toString()
             tvPasswordWarning.showWarning(validatePassword(password))
             updatePasswordStrength(password)
-            tvConfirmPasswordWarning.showWarning(validateConfirmPassword(
-                password,
-                etConfirmPassword.text.toString()
-            ))
+            tvConfirmPasswordWarning.showWarning(
+                validateConfirmPassword(
+                    password,
+                    etConfirmPassword.text.toString()
+                )
+            )
         }
         etConfirmPassword.doAfterTextChanged {
-            tvConfirmPasswordWarning.showWarning(validateConfirmPassword(
-                etPassword.text.toString(),
-                etConfirmPassword.text.toString()
-            ))
+            tvConfirmPasswordWarning.showWarning(
+                validateConfirmPassword(
+                    etPassword.text.toString(),
+                    etConfirmPassword.text.toString()
+                )
+            )
         }
         tilPassword.setEndIconOnClickListener {
             togglePasswordVisibility(etPassword)
@@ -106,12 +108,12 @@ class RegisterActivity : AppCompatActivity() {
             tvUsernameWarning.showWarning(userValid)
             tvPasswordWarning.showWarning(passValid)
             tvConfirmPasswordWarning.showWarning(confirmValid)
-            
+
             if (!cbTermsAndConditions.isChecked) {
                 showToast("Please accept the Terms and Conditions to continue.")
                 return@setOnClickListener
             }
-            
+
             if (userValid == null && passValid == null && confirmValid == null) {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
@@ -132,7 +134,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         }
-        
+
         btnSignInWithGoogle.setOnClickListener {
             startGoogleSignIn()
         }
@@ -165,9 +167,13 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     class AsteriskPasswordTransformationMethod : PasswordTransformationMethod() {
-        override fun getTransformation(source: CharSequence, view: android.view.View): CharSequence {
+        override fun getTransformation(
+            source: CharSequence,
+            view: android.view.View
+        ): CharSequence {
             return PasswordCharSequence(source)
         }
+
         private class PasswordCharSequence(private val source: CharSequence) : CharSequence {
             override val length: Int get() = source.length
             override fun get(index: Int): Char = '*'
@@ -191,6 +197,7 @@ class RegisterActivity : AppCompatActivity() {
                 binding.llPasswordStrength.visibility = View.GONE
                 return
             }
+
             password.length < 8 -> "Very Weak"
             !password.any { it.isUpperCase() } || !password.any { it.isLowerCase() } -> "Weak"
             !password.any { it.isDigit() } -> "Fair"
@@ -235,6 +242,7 @@ class RegisterActivity : AppCompatActivity() {
                     val account = result.account
                     handleSuccessfulGoogleSignIn(account)
                 }
+
                 is GoogleSignInHelper.GoogleSignInResult.Error -> {
                     handleGoogleSignInError(result.statusCode, result.message)
                 }
@@ -247,7 +255,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun handleSuccessfulGoogleSignIn(account: GoogleSignInAccount) {
         val email = account.email ?: ""
         val displayName = account.displayName ?: account.email?.split("@")?.first() ?: "User"
-        
+
         userViewModel.getUserByUsername(email) { existing ->
             if (existing != null) {
                 showToast("Account already exists! Please login instead.")
@@ -272,6 +280,7 @@ class RegisterActivity : AppCompatActivity() {
             GoogleSignInHelper.RC_SIGN_IN -> {
                 showToast("Google Sign-In failed: Please try again")
             }
+
             else -> {
                 showToast("Google Sign-In failed: Error code $resultCode")
             }
@@ -280,18 +289,24 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun handleGoogleSignInError(statusCode: Int, message: String) {
         val errorMessage = when (statusCode) {
-            com.google.android.gms.common.api.CommonStatusCodes.NETWORK_ERROR -> 
+            com.google.android.gms.common.api.CommonStatusCodes.NETWORK_ERROR ->
                 "Network error. Please check your internet connection."
-            com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT ->
                 "Request timed out. Please try again."
-            com.google.android.gms.common.api.CommonStatusCodes.CANCELED -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.CANCELED ->
                 "Sign-in was cancelled."
-            com.google.android.gms.common.api.CommonStatusCodes.INVALID_ACCOUNT -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.INVALID_ACCOUNT ->
                 "Invalid account. Please try with a different account."
-            com.google.android.gms.common.api.CommonStatusCodes.SIGN_IN_REQUIRED -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.SIGN_IN_REQUIRED ->
                 "Sign-in required. Please try again."
-            com.google.android.gms.common.api.CommonStatusCodes.INTERNAL_ERROR -> 
+
+            com.google.android.gms.common.api.CommonStatusCodes.INTERNAL_ERROR ->
                 "Internal error. Please try again later."
+
             else -> "Google Sign-In failed: $message"
         }
         showToast(errorMessage)
